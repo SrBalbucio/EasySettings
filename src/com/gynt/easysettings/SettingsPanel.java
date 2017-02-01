@@ -34,9 +34,9 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
-import com.gynt.easysettings.Settings.PreferenceDir;
-import com.gynt.easysettings.Settings.PreferenceItem;
-import com.gynt.easysettings.Settings.PreferenceSub;
+import com.gynt.easysettings.Settings.Dir;
+import com.gynt.easysettings.Settings.Item;
+import com.gynt.easysettings.Settings.Sub;
 
 public class SettingsPanel extends JPanel {
 
@@ -56,11 +56,13 @@ public class SettingsPanel extends JPanel {
 	private static final long serialVersionUID = 4104785855475407998L;
 	private JPanel prefPanel;
 	private JTree prefTree;
+	private SettingsRenderer renderer;
+	private Dir dirroot;
 
 	/**
 	 * Create the panel.
 	 */
-	public SettingsPanel() {
+	private SettingsPanel() {
 		setLayout(new BorderLayout(0, 0));
 
 		JSplitPane splitPane = new JSplitPane();
@@ -78,7 +80,7 @@ public class SettingsPanel extends JPanel {
 		//prefTree.setRootVisible(false);
 		prefTree.addTreeSelectionListener(new TreeSelectionListener() {
 			public void valueChanged(TreeSelectionEvent arg0) {
-				PrefPanel d = (PrefPanel) ((DefaultMutableTreeNode) arg0.getNewLeadSelectionPath()
+				JPanel d = (JPanel) ((DefaultMutableTreeNode) arg0.getNewLeadSelectionPath()
 						.getLastPathComponent()).getUserObject();
 
 				prefPanel.removeAll();
@@ -94,284 +96,31 @@ public class SettingsPanel extends JPanel {
 		splitPane.setRightComponent(panel_1);
 		panel_1.setLayout(new BorderLayout(0, 0));
 
-//		JScrollPane scrollPane_1 = new JScrollPane();
-//		panel_1.add(scrollPane_1);
-
 		prefPanel = new JPanel(new BorderLayout(0, 0));
-//		scrollPane_1.setViewportView(prefPanel);
 		panel_1.add(prefPanel);
 
+		renderer = new DefaultSettingsRenderer();
 	}
-
-	public static class PrefPanel extends JPanel {
-
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = -3068459540835447028L;
-		private PreferenceDir source;
-
-		public PrefPanel(PreferenceDir src) {
-			source = src;
-
-			setLayout(new FlowLayout(FlowLayout.LEADING));
-
-			// ArrayList<JPanel> subpanels = new ArrayList<>();
-			for (PreferenceSub sub : source.subs) {
-				JPanel subpanel = new JPanel();
-				subpanel.setLayout(new GridLayout(0, 1));
-				add(subpanel);
-
-				subpanel.setBorder(BorderFactory.createTitledBorder(sub.description));
-				ButtonGroup bg = new ButtonGroup();
-				for (int i = 0; i < sub.items.size(); i++) {
-					PreferenceItem pi = sub.items.get(i);
-					// System.out.println(pi.type.getSimpleName());
-					switch (pi.type.getSimpleName()) {
-					case "File": {
-						JLabel label = new JLabel(pi.description);
-						JTextField jtf = new JTextField(pi.getValue().toString());
-						jtf.getDocument().addDocumentListener(new DocumentListener() {
-
-							@Override
-							public void removeUpdate(DocumentEvent e) {
-								subpanel.revalidate();
-								pi.setValue(jtf.getText());
-							}
-
-							@Override
-							public void insertUpdate(DocumentEvent e) {
-								subpanel.revalidate();
-								pi.setValue(jtf.getText());
-							}
-
-							@Override
-							public void changedUpdate(DocumentEvent e) {
-								subpanel.revalidate();
-								pi.setValue(jtf.getText());
-							}
-						});
-						JButton browse = new JButton("Browse");
-						browse.addActionListener(new ActionListener() {
-							@Override
-							public void actionPerformed(ActionEvent e) {
-								JFileChooser jfc = new JFileChooser(pi.getValue().toString());
-								int result = jfc.showOpenDialog(browse);
-								if(result==JFileChooser.APPROVE_OPTION) {
-									jtf.setText(jfc.getSelectedFile().toString());
-									//pi.setValue(jfc.getSelectedFile().toString()); //Use listener?
-								}
-							}
-						});
-						JPanel subsub = new JPanel(new BorderLayout());
-						subsub.add(label, BorderLayout.WEST);
-						subsub.add(jtf, BorderLayout.CENTER);
-						subsub.add(browse, BorderLayout.EAST);
-						subpanel.add(subsub);
-						break;
-					}
-					case "Radio": {
-						JRadioButton jrb = new JRadioButton(pi.description);
-						jrb.setSelected((Boolean) pi.getValue());
-						jrb.addItemListener(new ItemListener() {
-							@Override
-							public void itemStateChanged(ItemEvent e) {
-								pi.setValue(e.getStateChange() == ItemEvent.SELECTED);
-							}
-						});
-						bg.add(jrb);
-						subpanel.add(jrb);
-						break;
-					}
-					case "Boolean": {
-
-						JCheckBox jcb = new JCheckBox(pi.description);
-						jcb.addItemListener(new ItemListener() {
-							@Override
-							public void itemStateChanged(ItemEvent e) {
-								pi.setValue(e.getStateChange() == ItemEvent.SELECTED);
-							}
-						});
-						jcb.setSelected((Boolean) pi.getValue());
-						subpanel.add(jcb);
-
-						break;
-					}
-					case "String": {
-						JLabel label = new JLabel(pi.description);
-						// System.out.println(pi.buildPath());
-						JTextField jtf = new JTextField((String) pi.getValue());
-						jtf.getDocument().addDocumentListener(new DocumentListener() {
-
-							@Override
-							public void removeUpdate(DocumentEvent e) {
-								pi.setValue(jtf.getText());
-							}
-
-							@Override
-							public void insertUpdate(DocumentEvent e) {
-								pi.setValue(jtf.getText());
-							}
-
-							@Override
-							public void changedUpdate(DocumentEvent e) {
-								pi.setValue(jtf.getText());
-							}
-						});
-						subpanel.add(label);
-						subpanel.add(jtf);
-						break;
-					}
-					case "Float": {
-						System.out.println("Rendering float");
-						JLabel label = new JLabel(pi.description);
-						JSpinner js = new JSpinner(new SpinnerModel() {
-
-							private ArrayList<ChangeListener> listeners = new ArrayList<>();
-
-							@Override
-							public void setValue(Object value) {
-								pi.setValue(value);
-								for(ChangeListener l : listeners) {
-									l.stateChanged(new ChangeEvent(this));
-								}
-							}
-
-							@Override
-							public void removeChangeListener(ChangeListener l) {
-								listeners.remove(l);
-							}
-
-							@Override
-							public Object getValue() {
-								return pi.getValue();
-							}
-
-							@Override
-							public Object getPreviousValue() {
-								return (Float)getValue()-0.1f;
-							}
-
-							@Override
-							public Object getNextValue() {
-								return (Float)getValue()+0.1f;
-							}
-
-							@Override
-							public void addChangeListener(ChangeListener l) {
-								listeners.add(l);
-							}
-						});
-						subpanel.add(label);
-						subpanel.add(js);
-						break;
-					}
-					case "Integer": {
-						JLabel label = new JLabel(pi.description);
-						JSpinner js = new JSpinner(new SpinnerModel() {
-
-							private ArrayList<ChangeListener> listeners = new ArrayList<>();
-
-							@Override
-							public void setValue(Object value) {
-								pi.setValue(value);
-								for(ChangeListener l : listeners) {
-									l.stateChanged(new ChangeEvent(this));
-								}
-							}
-
-							@Override
-							public void removeChangeListener(ChangeListener l) {
-								listeners.remove(l);
-							}
-
-							@Override
-							public Object getValue() {
-								return pi.getValue();
-							}
-
-							@Override
-							public Object getPreviousValue() {
-								return (Integer)getValue()-1;
-							}
-
-							@Override
-							public Object getNextValue() {
-								return (Integer)getValue()+1;
-							}
-
-							@Override
-							public void addChangeListener(ChangeListener l) {
-								listeners.add(l);
-							}
-						});
-						subpanel.add(label);
-						subpanel.add(js);
-						break;
-					}
-					case "Double": {
-						JLabel label = new JLabel(pi.description);
-						JTextField js = new JTextField();
-						js.setText(pi.getValue().toString());
-						js.setInputVerifier(new InputVerifier() {
-
-							@Override
-							public boolean verify(JComponent input) {
-								String text = ((JTextField) input).getText();
-							       try {
-							            Double.parseDouble(text);
-							            return true;
-							        } catch (NumberFormatException e) {
-							            return false;
-							        }
-
-							}
-						});
-						js.getDocument().addDocumentListener(new DocumentListener() {
-
-							@Override
-							public void removeUpdate(DocumentEvent e) {
-								//pi.setValue(Double.parseDouble(js.getText()));
-							}
-
-							@Override
-							public void insertUpdate(DocumentEvent e) {
-								//pi.setValue(Double.parseDouble(js.getText()));
-							}
-
-							@Override
-							public void changedUpdate(DocumentEvent e) {
-								pi.setValue(Double.parseDouble(js.getText()));
-							}
-						});
-						subpanel.add(label);
-						subpanel.add(js);
-						break;
-					}
-					}
-
-				}
-				subpanel.revalidate();
-			}
-
-		}
-
-		@Override
-		public String toString() {
-			return source.name;
-		}
+	
+	public SettingsPanel(Dir root) {
+		this();
+		dirroot = root;
+	}
+	
+	public void setRenderer(SettingsRenderer sr) {
+		renderer=sr;
 	}
 
 	public void render() {
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode(new PrefPanel(Settings.ROOT));
+		DefaultMutableTreeNode root = new DefaultMutableTreeNode(renderer.getDirComponent(null, dirroot));
 		prefTree.setModel(new DefaultTreeModel(root));
-		dirbuild(root, Settings.ROOT);
+		dirbuild(root, dirroot);
 		expandAllNodes(prefTree);
 	}
 
-	public void dirbuild(DefaultMutableTreeNode currentnode, PreferenceDir current) {
-		for (PreferenceDir dir : current.dirs) {
-			DefaultMutableTreeNode sub = new DefaultMutableTreeNode(new PrefPanel(dir));
+	public void dirbuild(DefaultMutableTreeNode currentnode, Dir current) {
+		for (Dir dir : current.dirs) {
+			DefaultMutableTreeNode sub = new DefaultMutableTreeNode(renderer.getDirComponent(null, dir));
 			currentnode.add(sub);
 			dirbuild(sub, dir);
 		}
