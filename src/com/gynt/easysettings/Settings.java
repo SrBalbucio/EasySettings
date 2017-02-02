@@ -22,7 +22,7 @@ public class Settings {
 	public static class Properties extends java.util.Properties {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 3339584917734731721L;
 		@Override
@@ -38,7 +38,7 @@ public class Settings {
 			return Collections.enumeration(result);
 		}
 	}
-	
+
 	public Dir getRoot() {
 		return ROOT;
 	}
@@ -77,13 +77,13 @@ public class Settings {
 	private void save(Path p, byte[] data) throws IOException {
 		Files.write(p, data);
 	}
-	
+
 	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		PROPERTIES.store(bos, "");
 		return bos.toByteArray();
 	}
-	
+
 	public void fromBytes(byte[] bytes) throws IOException {
 		PROPERTIES.load(new ByteArrayInputStream(bytes));
 	}
@@ -180,7 +180,6 @@ public class Settings {
 		public Object getValue() {
 			String s = PROPERTIES.getProperty(path);
 			if(s==null) {
-				System.out.println(path + " is null");
 				return null;
 			}
 			switch (type) {

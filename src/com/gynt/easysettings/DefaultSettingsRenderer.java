@@ -114,7 +114,7 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 		Dir source = dir;
 		JPanel panel = new JPanel() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = -1417088770258417598L;
 
@@ -156,7 +156,7 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 			JLabel label = new JLabel(pi.description);
 			JTextField jtf = new JTextField(pi.getValue().toString()) {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = -683998504709538631L;
 
@@ -211,7 +211,7 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 			JLabel label = new JLabel(pi.description);
 			JTextField jtf = new JTextField(pi.getValue().toString()) {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 326700658857108258L;
 
@@ -266,9 +266,6 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 		}
 		case RADIO: {
 			JRadioButton jrb = new JRadioButton(pi.description);
-			System.out.println(jrb);
-			System.out.println(pi);
-			System.out.println(pi.getValue());
 			jrb.setSelected((Boolean) pi.getValue());
 			jrb.addItemListener(new ItemListener() {
 				@Override
@@ -319,20 +316,20 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 		case FLOAT: {
 			JPanel subsub = new JPanel();
 			JLabel label = new JLabel(pi.description);
-			JSpinner js = new JSpinner(new SpinnerNumberModel(new Float((float) pi.getValue()), null, null, new Float(1))) {
+			JSpinner js = new JSpinner(new SpinnerNumberModel(new Float((float) pi.getValue()), null, null, new Float(0.1F))) {
 
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 8728683428180496505L;
-				
+
 				@Override
 				public Dimension getPreferredSize() {
 					Dimension d = super.getPreferredSize();
 					d.width+=getValue().toString().length();
 					return d;
 				}
-	
+
 			};
 			//js.setValue(pi.getValue());
 			js.addChangeListener(new ChangeListener() {
@@ -353,17 +350,17 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 			JSpinner js = new JSpinner(new SpinnerNumberModel(new Integer((int) pi.getValue()), null, null, new Integer(1))) {
 
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 8728683428180496505L;
-				
+
 				@Override
 				public Dimension getPreferredSize() {
 					Dimension d = super.getPreferredSize();
 					d.width+=getValue().toString().length();
 					return d;
 				}
-	
+
 			};
 			//js.setValue(pi.getValue());
 			js.addChangeListener(new ChangeListener() {
@@ -380,20 +377,20 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 		case DOUBLE: {
 			JPanel subsub = new JPanel();
 			JLabel label = new JLabel(pi.description);
-			JSpinner js = new JSpinner(new SpinnerNumberModel(new Double((double) pi.getValue()), null, null, new Double(1))) {
+			JSpinner js = new JSpinner(new SpinnerNumberModel(new Double((double) pi.getValue()), null, null, 0.1D)) {
 
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 8728683428180496505L;
-				
+
 				@Override
 				public Dimension getPreferredSize() {
 					Dimension d = super.getPreferredSize();
 					d.width+=getValue().toString().length();
 					return d;
 				}
-	
+
 			};
 			//js.setValue(pi.getValue());
 			js.addChangeListener(new ChangeListener() {
@@ -413,17 +410,17 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 			JSpinner js = new JSpinner(new SpinnerNumberModel(new Long((long) pi.getValue()), null, null, new Long(1))) {
 
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 8728683428180496505L;
-				
+
 				@Override
 				public Dimension getPreferredSize() {
 					Dimension d = super.getPreferredSize();
 					d.width+=getValue().toString().length();
 					return d;
 				}
-	
+
 			};
 			//js.setValue(pi.getValue());
 			js.addChangeListener(new ChangeListener() {
@@ -437,7 +434,7 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 			subsub.add(js);
 			return subsub;
 		}
-		
+
 		case SHORT:
 		 {
 				JPanel subsub = new JPanel();
@@ -445,17 +442,17 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 				JSpinner js = new JSpinner(new SpinnerNumberModel(new Short((short) pi.getValue()), null, null, new Short((short) 1))) {
 
 					/**
-					 * 
+					 *
 					 */
 					private static final long serialVersionUID = 8728683428180496505L;
-					
+
 					@Override
 					public Dimension getPreferredSize() {
 						Dimension d = super.getPreferredSize();
 						d.width+=getValue().toString().length();
 						return d;
 					}
-		
+
 				};
 				//js.setValue(pi.getValue());
 				js.addChangeListener(new ChangeListener() {

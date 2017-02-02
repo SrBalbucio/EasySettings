@@ -5,8 +5,6 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JTree;
 
-import com.gynt.easysettings.Settings.Dir;
-
 public class SettingsPanel extends JPanel {
 
 	public static void expandAllNodes(JTree tree) {
