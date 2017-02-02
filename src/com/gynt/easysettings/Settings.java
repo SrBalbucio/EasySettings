@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Properties;
-
-import javax.management.RuntimeErrorException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
 
 public class Settings {
 
@@ -19,6 +19,26 @@ public class Settings {
 	private File load;
 	public final Properties PROPERTIES = new Properties();
 
+	public static class Properties extends java.util.Properties {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 3339584917734731721L;
+		@Override
+		public synchronized Enumeration<Object> keys() {
+			ArrayList<Object> result = Collections.list(super.keys());
+			Collections.sort(result, new Comparator<Object>() {
+
+				@Override
+				public int compare(Object o1, Object o2) {
+					return o1.toString().compareTo(o2.toString());
+				}
+			});
+			return Collections.enumeration(result);
+		}
+	}
+	
 	public Dir getRoot() {
 		return ROOT;
 	}
