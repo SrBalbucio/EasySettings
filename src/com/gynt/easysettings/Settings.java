@@ -6,76 +6,83 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Properties;
 
+import javax.management.RuntimeErrorException;
+
 public class Settings {
-	
+
 	private Dir ROOT;
 
 	private File save;
 	private File load;
-	private final Properties PROPERTIES = new Properties();
+	public final Properties PROPERTIES = new Properties();
 
 	public Dir getRoot() {
 		return ROOT;
 	}
-	
+
 	public Settings(File loadFile) {
-		load=loadFile;
-		ROOT=new Dir();
-		ROOT.name="Preferences";
+		load = loadFile;
+		ROOT = new Dir();
+		ROOT.name = "Preferences";
 	}
-	
+
 	public Settings(File loadFile, File saveFile) {
 		this(loadFile);
-		save=saveFile;
+		save = saveFile;
 	}
-	
-	public void save() throws IOException {
+
+	public void setLoadFile(File f) {
+		load = f;
+	}
+
+	public void setSaveFile(File f) {
+		save = f;
+	}
+
+	public void saveDefault() throws IOException {
+		if (save == null)
+			throw new RuntimeException("Save file not specified");
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		PROPERTIES.store(bos, "");
-		Path p = new File("settings.properties").toPath();
-		save(p, bos.toByteArray());
+		save(save.toPath(), bos.toByteArray());
+	}
+
+	public void save() throws IOException {
+		save(save.toPath(), getBytes());
 	}
 
 	private void save(Path p, byte[] data) throws IOException {
 		Files.write(p, data);
 	}
 	
-	public void saveDefault() throws IOException {
-		if(save==null) throw new RuntimeException("Save file not specified");
+	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		PROPERTIES.store(bos, "");
-		save(save.toPath(), bos.toByteArray());
+		return bos.toByteArray();
+	}
+	
+	public void fromBytes(byte[] bytes) throws IOException {
+		PROPERTIES.load(new ByteArrayInputStream(bytes));
 	}
 
 	public void load() throws IOException {
-		PROPERTIES.clear();
-		ByteArrayInputStream bis = new ByteArrayInputStream(
-				Files.readAllBytes(load.toPath()));
-		PROPERTIES.load(bis);
-	}
-
-	public static class Radio {
-		public static Boolean parseRadio(Object val) {
-			return Boolean.parseBoolean((String) val);
-		}
-		public static String toString(Boolean c) {
-			return Boolean.toString(c);
-		}
-	}
-
-	public boolean loaded() {
-		return !PROPERTIES.isEmpty();
+		fromBytes(Files.readAllBytes(load.toPath()));
 	}
 
 	public static enum Type {
-		FILE, RADIO, BOOLEAN, STRING, INTEGER, DOUBLE, FLOAT, SHORT, LONG;
-	}
+		FOLDER(File.class), FILE(File.class), RADIO(Boolean.class), BOOLEAN(Boolean.class), STRING(
+				String.class), INTEGER(
+						int.class), DOUBLE(double.class), FLOAT(float.class), SHORT(short.class), LONG(long.class);
 
+		public Class<?> type;
+
+		private Type(Class<?> t) {
+			type = t;
+		}
+	}
 
 	public static interface Parentable {
 		Parentable getParent();
@@ -103,14 +110,17 @@ public class Settings {
 		}
 
 		private void tell(Object oldValue, Object newValue) {
-			for(ChangeListener cl : listeners) {
+			for (ChangeListener cl : listeners) {
 				cl.onChange(this, oldValue, newValue);
 			}
 		}
 
 		public void setValue(Object val) {
 			Object oval = getValue();
-			switch(type) {
+			switch (type) {
+			case FOLDER:
+				PROPERTIES.setProperty(path, val.toString());
+				break;
 			case FILE:
 				PROPERTIES.setProperty(path, val.toString());
 				break;
@@ -121,7 +131,7 @@ public class Settings {
 				PROPERTIES.setProperty(path, Boolean.toString((Boolean) val));
 				break;
 			case RADIO:
-				PROPERTIES.setProperty(path, Radio.toString((Boolean) val));
+				PROPERTIES.setProperty(path, Boolean.toString((Boolean) val));
 				break;
 			case INTEGER:
 				PROPERTIES.setProperty(path, Integer.toString((int) val));
@@ -132,42 +142,57 @@ public class Settings {
 			case FLOAT:
 				PROPERTIES.setProperty(path, Float.toString((float) val));
 				break;
-			default:
-				throw new RuntimeException();
+			case LONG:
+				PROPERTIES.setProperty(path, Long.toString((long) val));
+				break;
+			case SHORT:
+				PROPERTIES.setProperty(path, Short.toString((short) val));
+				break;
 			}
-			if(oval!=null) {
-				if(!oval.equals(val)) tell(oval, val);
+			if (oval != null) {
+				if (!oval.equals(val))
+					tell(oval, val);
 			} else {
 				tell(oval, val);
 			}
 		}
 
 		public Object getValue() {
-			switch(type) {
+			String s = PROPERTIES.getProperty(path);
+			if(s==null) {
+				System.out.println(path + " is null");
+				return null;
+			}
+			switch (type) {
+			case FOLDER:
+				return PROPERTIES.getProperty(path) != null ? new File(PROPERTIES.getProperty(path)) : new File("");
 			case FILE:
-				return PROPERTIES.getProperty(path)!=null?new File(PROPERTIES.getProperty(path)):new File("");
+				return PROPERTIES.getProperty(path) != null ? new File(PROPERTIES.getProperty(path)) : new File("");
 			case STRING:
 				return PROPERTIES.getProperty(path);
 			case BOOLEAN:
 				return Boolean.parseBoolean(PROPERTIES.getProperty(path));
 			case RADIO:
-				return Radio.parseRadio(PROPERTIES.getProperty(path));
+				return Boolean.parseBoolean(PROPERTIES.getProperty(path));
 			case INTEGER:
 				return Integer.parseInt(PROPERTIES.getProperty(path));
 			case DOUBLE:
-				return Double.parseDouble(PROPERTIES.getProperty(path)==null?"0.0":PROPERTIES.getProperty(path));
+				return Double.parseDouble(PROPERTIES.getProperty(path));
 			case FLOAT:
-				return Float.parseFloat(PROPERTIES.getProperty(path)==null?"0.0":PROPERTIES.getProperty(path));
-			default:
-				throw new RuntimeException();
+				return Float.parseFloat(PROPERTIES.getProperty(path));
+			case LONG:
+				return Long.parseLong(PROPERTIES.getProperty(path));
+			case SHORT:
+				return Short.parseShort(PROPERTIES.getProperty(path));
 			}
+			throw new RuntimeException();
 		}
 
 		public String buildPath() {
 			String path = name;
 			Parentable parent = getParent();
-			while(parent!=null) {
-				path=parent.toString()+"."+path;
+			while (parent != null) {
+				path = parent.toString() + "." + path;
 				parent = parent.getParent();
 			}
 			return path;
@@ -191,19 +216,24 @@ public class Settings {
 		public String description;
 
 		public Item lookUp(String name) {
-			for(Item child : items) {
-				if(child.name.equals(name))  return child;
+			for (Item child : items) {
+				if (child.name.equals(name))
+					return child;
 			}
 			return null;
 		}
 
-		public Item registerItem(String name, String description, Type type, Object defaultvalue) {
+		public Item registerItem(String name, String description, Type type, Object defaultvalue, ChangeListener...changeListeners) {
 			Item i = lookUp(name);
-			if(i!=null) return i;
+			if (i != null)
+				return i;
 
 			Item result = new Item(this, name, type, defaultvalue);
-			result.description=description;
+			result.description = description;
 			items.add(result);
+			for(ChangeListener c : changeListeners) {
+				result.listeners.add(c);
+			}
 			return result;
 		}
 
@@ -228,8 +258,8 @@ public class Settings {
 		public ArrayList<Sub> subs = new ArrayList<>();
 
 		public Dir lookUpDir(String name) {
-			for(Dir child : this.dirs) {
-				if(child.name==name) {
+			for (Dir child : this.dirs) {
+				if (child.name == name) {
 					return child;
 				}
 			}
@@ -237,8 +267,8 @@ public class Settings {
 		}
 
 		public Sub lookUpSub(String name) {
-			for(Sub child : this.subs) {
-				if(child.name==name) {
+			for (Sub child : this.subs) {
+				if (child.name == name) {
 					return child;
 				}
 			}
@@ -247,23 +277,25 @@ public class Settings {
 
 		public Dir registerDir(String string) {
 			Dir i = lookUpDir(string);
-			if(i!=null) return i;
+			if (i != null)
+				return i;
 
 			Dir result = new Dir();
-			result.name=string;
-			result.parent=this;
+			result.name = string;
+			result.parent = this;
 			dirs.add(result);
 			return result;
 		}
 
 		public Sub registerSub(String string, String description) {
 			Sub i = lookUpSub(string);
-			if(i!=null) return i;
+			if (i != null)
+				return i;
 
 			Sub result = new Sub();
-			result.name=string;
-			result.parent=this;
-			result.description=description;
+			result.name = string;
+			result.parent = this;
+			result.description = description;
 			subs.add(result);
 			return result;
 		}
