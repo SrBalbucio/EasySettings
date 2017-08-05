@@ -227,8 +227,8 @@ public class DefaultRenderer implements Renderer {
 			browse.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					JFileChooser jfc = new JFileChooser((String) setting.getValue());
-					jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+					JFileChooser jfc = renderFileDialog(setting);
+
 					int result = jfc.showOpenDialog(browse);
 					if (result == JFileChooser.APPROVE_OPTION) {
 						jtf.setText(jfc.getSelectedFile().toString());
@@ -265,31 +265,7 @@ public class DefaultRenderer implements Renderer {
 			browse.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					JFileChooser jfc = new JFileChooser((String) setting.getValue());
-					jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-					if (setting.getType() instanceof FileType) {
-						jfc.setFileFilter(new FileFilter() {
-
-							@Override
-							public String getDescription() {
-								return ((FileType) setting.getType()).getExtension();
-							}
-
-							@Override
-							public boolean accept(File f) {
-								if (f.isDirectory())
-									return true;
-								if(f.getPath().contains(".")) {
-									String ext = f.getPath().split("\\.")[1];
-									for(String e : ((FileType) setting.getType()).getExtension().split(";")) {
-										if(ext.startsWith(e)) return true;
-									}
-								} 
-								return false;
-							}
-						});
-					}
+					JFileChooser jfc = renderFileDialog(setting);
 
 					int result = jfc.showOpenDialog(browse);
 					if (result == JFileChooser.APPROVE_OPTION) {
@@ -328,6 +304,59 @@ public class DefaultRenderer implements Renderer {
 		}
 		;
 		return new JComponent[0];
+	}
+	
+	public JFileChooser renderFileDialog(Setting setting) {
+		JFileChooser jfc = new JFileChooser((String) setting.getValue());
+		
+		if(setting.getType().getType().toLowerCase().equals("FOLDER".toLowerCase())) {
+			jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		} else {
+			jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			if (setting.getType() instanceof FileType) {
+				jfc.setFileFilter(getFileFilter(setting));
+			}
+		}
+
+		return jfc;
+		
+	}
+	
+	public FileFilter getFileFilter(Setting setting) {
+		if(setting.getType() instanceof FileType) {
+			return new FileFilter() {
+
+				@Override
+				public String getDescription() {
+					return ((FileType) setting.getType()).getExtension();
+				}
+
+				@Override
+				public boolean accept(File f) {
+					if (f.isDirectory())
+						return true;
+					if(f.getPath().contains(".")) {
+						String ext = f.getPath().split("\\.")[1];
+						for(String e : ((FileType) setting.getType()).getExtension().split(";")) {
+							if(ext.startsWith(e)) return true;
+						}
+					} 
+					return false;
+				}
+			};
+		}
+		return new FileFilter() {
+			
+			@Override
+			public String getDescription() {
+				return "";
+			}
+			
+			@Override
+			public boolean accept(File f) {
+				return true;
+			}
+		};
 	}
 
 }
