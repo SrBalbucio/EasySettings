@@ -99,9 +99,9 @@ public class DefaultRenderer implements Renderer {
 		ButtonGroup bg = new ButtonGroup();
 
 		List<Setting> settings = section.get();
-		List<JComponent> components = new ArrayList<>();
+		List<JComponent[]> components = new ArrayList<>();
 		for (Setting s : settings) {
-			components.add(renderSettingComponent(s, bg));
+			components.add(renderSettingComponents(s, bg));
 		}
 		List<JLabel> labels = new ArrayList<>();
 		for (Setting s : settings) {
@@ -117,14 +117,18 @@ public class DefaultRenderer implements Renderer {
 
 		ParallelGroup column1 = g.createParallelGroup(GroupLayout.Alignment.LEADING);
 
-		ParallelGroup column2 = g.createParallelGroup(GroupLayout.Alignment.TRAILING);
+		ParallelGroup column2 = g.createParallelGroup(GroupLayout.Alignment.LEADING);
 
 		for (int i = 0; i < settings.size(); i++) {
 			column1 = column1.addComponent(labels.get(i));
 		}
 
 		for (int i = 0; i < settings.size(); i++) {
-			column2 = column2.addComponent(components.get(i));
+			SequentialGroup t = g.createSequentialGroup();
+			for (JComponent j : components.get(i)) {
+				t = t.addComponent(j);
+			}
+			column2 = column2.addGroup(t);
 		}
 
 		SequentialGroup horizontal = g.createSequentialGroup();
@@ -137,7 +141,9 @@ public class DefaultRenderer implements Renderer {
 		for (int i = 0; i < settings.size(); i++) {
 			ParallelGroup row = g.createParallelGroup(GroupLayout.Alignment.BASELINE);
 			row = row.addComponent(labels.get(i));
-			row = row.addComponent(components.get(i));
+			for (JComponent j : components.get(i)) {
+				row = row.addComponent(j);
+			}
 			vertical = vertical.addGroup(row);
 		}
 
@@ -146,8 +152,7 @@ public class DefaultRenderer implements Renderer {
 		return panel;
 	}
 
-	@Override
-	public JComponent renderSettingComponent(Setting setting, ButtonGroup bg) {
+	public JComponent[] renderSettingComponents(Setting setting, ButtonGroup bg) {
 		switch (setting.getType().getType().toUpperCase()) {
 		case "STRING": {
 			JTextField jtf = new JTextField((String) setting.getValue());
@@ -171,7 +176,7 @@ public class DefaultRenderer implements Renderer {
 					jtf.getParent().revalidate();
 				}
 			});
-			return jtf;
+			return new JComponent[] { jtf };
 		}
 		case "INTEGER": {
 			JSpinner js = new JSpinner(
@@ -184,7 +189,7 @@ public class DefaultRenderer implements Renderer {
 				}
 
 			});
-			return js;
+			return new JComponent[] { js };
 		}
 		case "DOUBLE": {
 			JSpinner js = new JSpinner(
@@ -197,7 +202,7 @@ public class DefaultRenderer implements Renderer {
 				}
 
 			});
-			return js;
+			return new JComponent[] { js };
 		}
 		case "FOLDER": {
 			JTextField jtf = new JTextField((String) setting.getValue());
@@ -230,18 +235,8 @@ public class DefaultRenderer implements Renderer {
 					}
 				}
 			});
-			JPanel subsub = new JPanel();
-			GroupLayout g = new GroupLayout(subsub);
-			subsub.setLayout(g);
-			g.setAutoCreateContainerGaps(true);
-			g.setAutoCreateGaps(true);
-			g.setHorizontalGroup(g.createSequentialGroup()
-					.addGroup(g.createParallelGroup(GroupLayout.Alignment.TRAILING).addComponent(jtf))
-					.addGroup(g.createParallelGroup(GroupLayout.Alignment.TRAILING).addComponent(browse)));
-			g.setVerticalGroup(
-					g.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(jtf).addComponent(browse));
 
-			return subsub;
+			return new JComponent[] { jtf, browse };
 		}
 		case "FILE": {
 			JTextField jtf = new JTextField((String) setting.getValue());
@@ -297,18 +292,8 @@ public class DefaultRenderer implements Renderer {
 					}
 				}
 			});
-			JPanel subsub = new JPanel();
-			GroupLayout g = new GroupLayout(subsub);
-			subsub.setLayout(g);
-			g.setAutoCreateContainerGaps(false);
-			g.setAutoCreateGaps(false);
-			g.setHorizontalGroup(g.createSequentialGroup()
-					.addGroup(g.createParallelGroup(GroupLayout.Alignment.TRAILING).addComponent(jtf))
-					.addGroup(g.createParallelGroup(GroupLayout.Alignment.TRAILING).addComponent(browse)));
-			g.setVerticalGroup(g.createSequentialGroup().addGroup(
-					g.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(jtf).addComponent(browse)));
 
-			return subsub;
+			return new JComponent[] { jtf, browse };
 		}
 		case "BOOLEAN": {
 			JCheckBox jcb = new JCheckBox("");
@@ -320,7 +305,7 @@ public class DefaultRenderer implements Renderer {
 					setting.setValue(jcb.isSelected());
 				}
 			});
-			return jcb;
+			return new JComponent[] { jcb };
 		}
 		case "RADIO":
 			JRadioButton jrb = new JRadioButton("");
@@ -333,7 +318,7 @@ public class DefaultRenderer implements Renderer {
 					setting.setValue(jrb.isSelected());
 				}
 			});
-			return jrb;
+			return new JComponent[] { jrb };
 		}
 		;
 		return null;

@@ -7,7 +7,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
 import com.gynt.easysettings.api.Config;
-import com.gynt.easysettings.rendering.AlternativeRenderer;
+import com.gynt.easysettings.rendering.DefaultRenderer;
 
 public class ExampleFrame extends JFrame {
 
@@ -21,7 +21,7 @@ public class ExampleFrame extends JFrame {
 		setBounds(100, 100, 582, 388);
 
 		Config config = new ExampleConfig();
-		AlternativeRenderer d = new AlternativeRenderer();
+		DefaultRenderer d = new DefaultRenderer();
 		JTabbedPane result = d.render(config);
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(result, BorderLayout.CENTER);
