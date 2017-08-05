@@ -280,8 +280,13 @@ public class DefaultRenderer implements Renderer {
 							public boolean accept(File f) {
 								if (f.isDirectory())
 									return true;
-								return f.getPath().contains(".") ? f.getPath().split("\\.")[1]
-										.startsWith(((FileType) setting.getType()).getExtension()) : false;
+								if(f.getPath().contains(".")) {
+									String ext = f.getPath().split("\\.")[1];
+									for(String e : ((FileType) setting.getType()).getExtension().split(";")) {
+										if(ext.startsWith(e)) return true;
+									}
+								} 
+								return false;
 							}
 						});
 					}
@@ -297,7 +302,7 @@ public class DefaultRenderer implements Renderer {
 		}
 		case "BOOLEAN": {
 			JCheckBox jcb = new JCheckBox("");
-			jcb.setSelected((boolean) setting.getValue());
+			jcb.setSelected(setting.getValue()==null?false:(boolean)setting.getValue());
 			jcb.addChangeListener(new ChangeListener() {
 
 				@Override
@@ -311,6 +316,7 @@ public class DefaultRenderer implements Renderer {
 			JRadioButton jrb = new JRadioButton("");
 			if (bg != null)
 				bg.add(jrb);
+			jrb.setSelected(setting.getValue()==null?false:(boolean)setting.getValue());
 			jrb.addChangeListener(new ChangeListener() {
 
 				@Override
@@ -321,7 +327,7 @@ public class DefaultRenderer implements Renderer {
 			return new JComponent[] { jrb };
 		}
 		;
-		return null;
+		return new JComponent[0];
 	}
 
 }

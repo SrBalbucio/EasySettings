@@ -30,7 +30,25 @@ public class ExampleConfig extends SimpleConfig {
 		pdf.add(source);
 		Setting test = new SimpleSetting("test", "Test", "", t.forType("STRING"));
 		pdf.add(test);
+		Setting bool = new SimpleSetting("ke", "Rawr", "", t.forType("BOOLEAN"));
+		pdf.add(bool);
 		general.add(pdf);
+		Directory music = new SimpleDirectory("music", "Music", "Configure music");
+		this.add(music);
+		Section background = new SimpleSection("bg", "Background", "Background music");
+		music.add(background);
+		Setting no = new SimpleSetting("no", "No music", "", t.forType("RADIO"));
+		no.setValue(true);
+		background.add(no);
+		Setting classical = new SimpleSetting("classical", "Classical", "", t.forType("RADIO"));
+		background.add(classical);
+		Setting rock = new SimpleSetting("rock", "Rock", "", t.forType("RADIO"));
+		background.add(rock);
+		Setting custo = new SimpleSetting("custo", "Custom music", "", t.forType("RADIO"));
+		background.add(custo);
+		Setting custom = new SimpleSetting("custom", "Select custom file", "Play custom file",
+				new FileType("FILE", String.class, "mp3"));
+		background.add(custom);
 	}
 
 }
