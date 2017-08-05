@@ -1,4 +1,4 @@
-package com.gynt.easysettings;
+package com.gynt.easysettings.old;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -33,9 +33,9 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
-import com.gynt.easysettings.Settings.Dir;
-import com.gynt.easysettings.Settings.Item;
-import com.gynt.easysettings.Settings.Sub;
+import com.gynt.easysettings.old.Settings.Dir;
+import com.gynt.easysettings.old.Settings.Item;
+import com.gynt.easysettings.old.Settings.Sub;
 
 public class DefaultSettingsRenderer implements SettingsRenderer {
 
@@ -163,8 +163,8 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 				@Override
 				public Dimension getPreferredSize() {
 					Dimension d = super.getPreferredSize();
-					if(getText()==null || getText().length()==0) {
-						d.width=50;
+					if (getText() == null || getText().length() == 0) {
+						d.width = 50;
 					}
 					return d;
 				}
@@ -218,8 +218,8 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 				@Override
 				public Dimension getPreferredSize() {
 					Dimension d = super.getPreferredSize();
-					if(getText()==null || getText().length()==0) {
-						d.width=50;
+					if (getText() == null || getText().length() == 0) {
+						d.width = 50;
 					}
 					return d;
 				}
@@ -316,7 +316,8 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 		case FLOAT: {
 			JPanel subsub = new JPanel();
 			JLabel label = new JLabel(pi.description);
-			JSpinner js = new JSpinner(new SpinnerNumberModel(new Float((float) pi.getValue()), null, null, new Float(0.1F))) {
+			JSpinner js = new JSpinner(
+					new SpinnerNumberModel(new Float((float) pi.getValue()), null, null, new Float(0.1F))) {
 
 				/**
 				 *
@@ -326,12 +327,12 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 				@Override
 				public Dimension getPreferredSize() {
 					Dimension d = super.getPreferredSize();
-					d.width+=getValue().toString().length();
+					d.width += getValue().toString().length();
 					return d;
 				}
 
 			};
-			//js.setValue(pi.getValue());
+			// js.setValue(pi.getValue());
 			js.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
@@ -339,7 +340,7 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 					js.revalidate();
 				}
 			});
-			//((JSpinner.DefaultEditor) js.getEditor()).getTextField().setColumns(4);
+			// ((JSpinner.DefaultEditor) js.getEditor()).getTextField().setColumns(4);
 			subsub.add(label);
 			subsub.add(js);
 			return subsub;
@@ -347,7 +348,8 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 		case INTEGER: {
 			JPanel subsub = new JPanel();
 			JLabel label = new JLabel(pi.description);
-			JSpinner js = new JSpinner(new SpinnerNumberModel(new Integer((int) pi.getValue()), null, null, new Integer(1))) {
+			JSpinner js = new JSpinner(
+					new SpinnerNumberModel(new Integer((int) pi.getValue()), null, null, new Integer(1))) {
 
 				/**
 				 *
@@ -357,12 +359,12 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 				@Override
 				public Dimension getPreferredSize() {
 					Dimension d = super.getPreferredSize();
-					d.width+=getValue().toString().length();
+					d.width += getValue().toString().length();
 					return d;
 				}
 
 			};
-			//js.setValue(pi.getValue());
+			// js.setValue(pi.getValue());
 			js.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
@@ -387,12 +389,12 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 				@Override
 				public Dimension getPreferredSize() {
 					Dimension d = super.getPreferredSize();
-					d.width+=getValue().toString().length();
+					d.width += getValue().toString().length();
 					return d;
 				}
 
 			};
-			//js.setValue(pi.getValue());
+			// js.setValue(pi.getValue());
 			js.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
@@ -407,7 +409,8 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 		case LONG: {
 			JPanel subsub = new JPanel();
 			JLabel label = new JLabel(pi.description);
-			JSpinner js = new JSpinner(new SpinnerNumberModel(new Long((long) pi.getValue()), null, null, new Long(1))) {
+			JSpinner js = new JSpinner(
+					new SpinnerNumberModel(new Long((long) pi.getValue()), null, null, new Long(1))) {
 
 				/**
 				 *
@@ -417,12 +420,12 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 				@Override
 				public Dimension getPreferredSize() {
 					Dimension d = super.getPreferredSize();
-					d.width+=getValue().toString().length();
+					d.width += getValue().toString().length();
 					return d;
 				}
 
 			};
-			//js.setValue(pi.getValue());
+			// js.setValue(pi.getValue());
 			js.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
@@ -435,37 +438,37 @@ public class DefaultSettingsRenderer implements SettingsRenderer {
 			return subsub;
 		}
 
-		case SHORT:
-		 {
-				JPanel subsub = new JPanel();
-				JLabel label = new JLabel(pi.description);
-				JSpinner js = new JSpinner(new SpinnerNumberModel(new Short((short) pi.getValue()), null, null, new Short((short) 1))) {
+		case SHORT: {
+			JPanel subsub = new JPanel();
+			JLabel label = new JLabel(pi.description);
+			JSpinner js = new JSpinner(
+					new SpinnerNumberModel(new Short((short) pi.getValue()), null, null, new Short((short) 1))) {
 
-					/**
-					 *
-					 */
-					private static final long serialVersionUID = 8728683428180496505L;
+				/**
+				 *
+				 */
+				private static final long serialVersionUID = 8728683428180496505L;
 
-					@Override
-					public Dimension getPreferredSize() {
-						Dimension d = super.getPreferredSize();
-						d.width+=getValue().toString().length();
-						return d;
-					}
+				@Override
+				public Dimension getPreferredSize() {
+					Dimension d = super.getPreferredSize();
+					d.width += getValue().toString().length();
+					return d;
+				}
 
-				};
-				//js.setValue(pi.getValue());
-				js.addChangeListener(new ChangeListener() {
-					@Override
-					public void stateChanged(ChangeEvent e) {
-						pi.setValue(js.getValue());
-						js.revalidate();
-					}
-				});
-				subsub.add(label);
-				subsub.add(js);
-				return subsub;
-			}
+			};
+			// js.setValue(pi.getValue());
+			js.addChangeListener(new ChangeListener() {
+				@Override
+				public void stateChanged(ChangeEvent e) {
+					pi.setValue(js.getValue());
+					js.revalidate();
+				}
+			});
+			subsub.add(label);
+			subsub.add(js);
+			return subsub;
+		}
 		default:
 			throw new RuntimeException();
 		}

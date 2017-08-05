@@ -1,11 +1,11 @@
-package com.gynt.easysettings;
+package com.gynt.easysettings.old;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 
-import com.gynt.easysettings.Settings.Dir;
-import com.gynt.easysettings.Settings.Item;
-import com.gynt.easysettings.Settings.Sub;
+import com.gynt.easysettings.old.Settings.Dir;
+import com.gynt.easysettings.old.Settings.Item;
+import com.gynt.easysettings.old.Settings.Sub;
 
 public interface SettingsRenderer {
 

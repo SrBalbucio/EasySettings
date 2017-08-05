@@ -1,4 +1,4 @@
-package com.gynt.easysettings;
+package com.gynt.easysettings.old;
 
 import java.awt.BorderLayout;
 
@@ -34,7 +34,7 @@ public class SettingsPanel extends JPanel {
 		settings = s;
 		add(renderer.getSettingsComponent(this, settings));
 	}
-	
+
 	public Settings getSettings() {
 		return settings;
 	}

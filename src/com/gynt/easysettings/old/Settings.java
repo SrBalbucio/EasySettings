@@ -1,4 +1,4 @@
-package com.gynt.easysettings;
+package com.gynt.easysettings.old;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,6 +25,7 @@ public class Settings {
 		 *
 		 */
 		private static final long serialVersionUID = 3339584917734731721L;
+
 		@Override
 		public synchronized Enumeration<Object> keys() {
 			ArrayList<Object> result = Collections.list(super.keys());
@@ -179,7 +180,7 @@ public class Settings {
 
 		public Object getValue() {
 			String s = PROPERTIES.getProperty(path);
-			if(s==null) {
+			if (s == null) {
 				return null;
 			}
 			switch (type) {
@@ -242,7 +243,8 @@ public class Settings {
 			return null;
 		}
 
-		public Item registerItem(String name, String description, Type type, Object defaultvalue, ChangeListener...changeListeners) {
+		public Item registerItem(String name, String description, Type type, Object defaultvalue,
+				ChangeListener... changeListeners) {
 			Item i = lookUp(name);
 			if (i != null)
 				return i;
@@ -250,7 +252,7 @@ public class Settings {
 			Item result = new Item(this, name, type, defaultvalue);
 			result.description = description;
 			items.add(result);
-			for(ChangeListener c : changeListeners) {
+			for (ChangeListener c : changeListeners) {
 				result.listeners.add(c);
 			}
 			return result;
