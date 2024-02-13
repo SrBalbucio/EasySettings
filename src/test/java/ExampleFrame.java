@@ -9,31 +9,31 @@ import com.gynt.easysettings.rendering.DefaultRenderer;
 
 public class ExampleFrame extends JFrame {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public ExampleFrame() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 582, 388);
+    public ExampleFrame() {
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(100, 100, 582, 388);
 
-		Config config = new ExampleConfig();
-		DefaultRenderer d = new DefaultRenderer();
-		JTabbedPane result = d.render(config);
-		getContentPane().setLayout(new BorderLayout());
-		getContentPane().add(result, BorderLayout.CENTER);
-	}
+        Config config = new ExampleConfig();
+        DefaultRenderer d = new DefaultRenderer();
+        JTabbedPane result = d.render(config);
+        getContentPane().setLayout(new BorderLayout());
+        getContentPane().add(result, BorderLayout.CENTER);
+    }
 
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
 
-			@Override
-			public void run() {
-				JFrame frame = new ExampleFrame();
-				frame.setVisible(true);
-			}
-		});
-	}
+            @Override
+            public void run() {
+                JFrame frame = new ExampleFrame();
+                frame.setVisible(true);
+            }
+        });
+    }
 
 }

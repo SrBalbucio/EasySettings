@@ -12,8 +12,10 @@ public class ExampleConfig extends SimpleConfig {
 
 	{
 		Types t = new Types();
+		// GENERAL
 		Directory general = new SimpleDirectory("general", "General", "General configuration");
 		this.add(general);
+		// SECTION
 		Section page = new SimpleSection("page", "Page", "Page configuration");
 		general.add(page);
 		Setting width = new SimpleSetting("width", "Width (mm)", "Width of the page", t.forType("INTEGER"));

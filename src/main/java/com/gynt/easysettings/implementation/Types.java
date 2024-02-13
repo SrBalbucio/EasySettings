@@ -28,7 +28,7 @@ public class Types {
 
 	public Type forType(String type) {
 		for (Type t : types) {
-			if (t.getType().toLowerCase().equals(type.toLowerCase()))
+			if (t.getType().equalsIgnoreCase(type))
 				return t;
 		}
 		return null;

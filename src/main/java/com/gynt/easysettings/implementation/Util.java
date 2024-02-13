@@ -3,14 +3,12 @@ package com.gynt.easysettings.implementation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Util {
 
 	public static <T> List<T> toList(Collection<T> values) {
-		ArrayList<T> list = new ArrayList<>();
-		for (T v : values)
-			list.add(v);
-		return list;
+		return new ArrayList<>(values);
 	}
 
 }
